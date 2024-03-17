@@ -42,3 +42,38 @@ for line in open('data'):          # Файловые итераторы, чит
 
 open('f.txt', encoding='latin-1')
 open('f.bin', 'rb')                # Байтовые файлы (строки bytes)
+
+"""JSON"""////////////////////////////////////////////////////////////////////////////////
+
+name = dict(first='Bob', last='Smith')
+rec = dict(name=name, job=['dev', 'mgr'], age=40.5)
+print(rec)    # {'name': {'first': 'Bob', 'last': 'Smith'}, 'job': ['dev', 'mgr'], 'age': 40.5}
+
+import json
+
+json.dumps(rec)
+S = json.dumps(rec)
+print(S)  # '{"name": {"first": "Bob", "last": "Smith"}, "job": ["dev", "mgr"], "age": 40.5}'
+
+O = json.loads(S)
+print(O)  # {'name': {'first': 'Bob', 'last': 'Smith'}, 'job': ['dev', 'mgr'], 'age': 40.5}
+O == rec # True
+
+json.dump(rec, fp=open('testjson.txt', 'w'), indent=4)
+print(open('testjson.txt').read())
+'''{
+    "name": {
+        "first": "Bob",
+        "last": "Smith"
+    },
+    "job": [
+        "dev",
+        "mgr"
+    ],
+    "age": 40.5
+}
+'''
+
+P = json.load(open('testjson.txt'))
+P  # {'name': {'first': 'Bob', 'last': 'Smith'}, 'job': ['dev', 'mgr'], 'age': 40.5}
+
