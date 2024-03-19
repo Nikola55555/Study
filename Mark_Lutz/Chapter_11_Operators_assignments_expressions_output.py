@@ -90,3 +90,57 @@ print(а, b)   #  ([], [42])
 a, b = [], [] # а и b не разделяют тот же самый объект
 
 
+"""Функция print"""
+
+print(x, y)   # Эквивалентно >>>
+import sys
+sys.stdout.write(str(x) + ' ' + str(y) + '\n')
+
+import sys
+sys.stdout = open('log.txt', 'a')   # Перенаправление вывода в файл
+print(x, y, z)   # Отправляется в log.txt
+
+"""Автоматическое перенаправление потока"""
+
+import sys
+temp = sys.stdout   # Сохранение с целью восстановления в будущем
+sys.stdout = open('log.txt', 'a')  # Перенапрвление вывода в файл
+print('spam')
+print(1, 2, 3)
+sys.stdout.close()    # Сброс выводва на диск
+sys.stdout = temp   # Восстановление исходного потока
+print('back here')   # 'back here'  # Теперь вывод снова виден
+print(open('log.txt').read())  # Результат предшествующих выводов
+# 'spam'
+# 1 2 3
+
+log = open('log.txt', 'a')
+print(x, y, z, file=log)   # Вывод в объект подобный файлу
+print(a, b, c)  # Вывод в исходный stdout
+
+log = open('log.txt', 'w')
+print(1, 2, 3, file=log)
+print(4, 5, 6, 7, file=log)
+log.close()
+print(7, 8, 9) >>>> 7 8 9
+print(open('log.txt').read()) >>>>>> 1 2 3
+                                     4 5 6
+
+X = 1; Y = 2
+print(X, Y)  # Вывод: легкий способ
+# 1 2
+
+import sys
+sys.stdout.write(str(X) + ' ' + str(Y) + '\n')  # Вывод: сложный способ
+# 1 2
+#4
+
+print(X, Y, file=open('temp1.txt', 'w'))  # Перенаправление вывода в файл
+
+open('temp2.txt').write(str(X) + ' ' + str(Y) + '\n')  # Отправка в файл вручную
+
+print(open('temp1.txt', 'rb').read())   # Двоичны режим для вывода байтов
+# b'1 2\r\n'
+print(open('temp2.txt', 'rb').read())
+# b'1 2\r\n'
+
