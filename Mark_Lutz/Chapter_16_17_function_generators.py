@@ -152,5 +152,174 @@ def func():
     return action
 
 x = func()
-print(x()2))                       # Выводит 16,  4 ** 2
+print(x()2))                      # Выводит 16,  4 ** 2
 
+# //////////// Операторы nonlocal  \\\\\\\\\\\\\\\\\\\\\\\\\\
+
+def func():
+    nonlocal namel, name2, ... # Здесь нормально
+>>> nonlocal X
+SyntaxError: nonlocal declaration not allowed at module level
+Синтаксическая ошибка: объявление nonlocal не разрешено на уровне модуля
+
+def tester(start):
+    state = start     # Ссылка не нелокальные переменные работает нормально
+    def nested(label):
+        print(label, state)    # Запоминает state из объемлющей области видимости
+    return nested
+
+F = tester(0)
+print(F('spam'))  >>> spam 0
+print(F('ham')) >>>>> ham 0
+
+def tester(start):
+    state = start
+    def nested(label):
+        print(label, state)
+        state += 1          # По умолчанию изменять нельзя
+    return nested
+
+F = tester(0)
+print(F('spam'))
+
+UnboundLocalError: local variable ’state’ referenced before assignment
+Ошибка несвязанной локальной переменной: ссылка на локальную переменную
+state перед ее присваиванием
+
+def tester(start):
+    state = start            # Каждый вызов получает собственное значение state
+    def nested(label):
+        nonlocal state       # Запоминает из объемлющей области видимости
+        print(label, state)
+        state += 1          # Нелокальную переменную разрешено изменять
+    return nested
+
+F = tester(0)
+print(F('spam'))              # При каждом вызове state инкрементируется
+>>> spam 0
+print(F('ham'))
+>>> ham 1
+print(F('eggs'))
+>>> eggs 2
+
+def tester (start) :
+    def nested(label):
+        nonlocal state               # Нелокальные переменные уже должны существовать в объемлющем def!
+        state = О
+        print(label, state)
+    return nested
+SyntaxError: no binding for nonlocal ’state' found
+Синтаксическая ошибка: не найдена привязка для нелокальной переменной state
+def tester (start) :
+    def nested(label):
+        global state             # Глобальные переменные не обязаны существовать до их объявления
+        state = 0                # Создает имя в области видимости модуля
+        print(label, state)
+    return nested
+F = tester (0)
+F('abc’) >>>> abc 0
+>>> state
+0
+
+////////////////////////////////////////
+
+spam = 99
+def tester () :
+    def nested () :
+        nonlocal spam                 # Должна быть в def, а не в модуле!
+        print(’Current=', spam)
+        spam += 1
+    return nested
+SyntaxError: no binding for nonlocal ’spam' found
+Синтаксическая ошибка: не найдена привязка для нелокальной переменной spam
+
+>>> def tester(start):
+        state = start            # Каждый вызов получает собственное значение state
+        def nested(label):
+            nonlocal state        # Запоминает state из объемлющей области видимости
+            print(label, state)
+            state += 1            # Нелокальную переменную разрешено изменять
+        return nested
+>>> F == tester (0)
+>>> F('spam')                    # Переменная state видима только внутри замыкания
+spam 0
+>>> F.state
+AttributeError: 'function' object has no attribute 'state'
+Ошибка атрибута: объект function не имеет атрибута state
+
+# ////////////  Состояния с помощью классов  \\\\\\\\\\\\\
+
+class tester:                     # Альтернатива на основе класса
+    def __init__(self, start):    # При создании объектов состояние
+        self.state = start        # явно сохраняется в новом объекте
+    def nested (self, label):
+        print(label, self.state)  # Явная ссылка на состояние
+        self.state += 1           # Изменения также разрешены
+
+F = tester(0)                     # Создание экземпляра, вызов__init__
+F.nested('spam') >>> spam 0        # F передается аргументу self
+F.nested('ham')  >>> ham 1
+
+
+class tester:
+    def __init__(self, start):
+        self.state = start
+
+    def __call__(self, label):    # Перехватывает прямые обращения к экземпляру
+        print(label, self.state)  # Таким образом, .nested() не требуется
+        self.state += 1
+
+H = tester(99))
+H('spam') >>> spam                  Вызывает __call__
+H('pancakes') >>> pancakes 100
+
+# ////////////////// exercises   \\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+X = 'spam'
+def func():
+    print(X)
+func()   # spam
+
+
+def func1():
+    X = 'NI'
+func1()
+print(X)  # spam
+
+X = 'spam'
+def func():
+    X = 'NI'
+    print(X)
+func()   # NI
+print(X)  # spam
+
+X = 'spam'
+def func():
+    global X
+    X = 'NI'
+
+func()
+print(X)  # NI
+
+
+X = 'spam'
+def func():
+    X = 'NI'
+    def nested():
+        print(X)
+    nested()
+
+func()    # NI
+print(X)  # spam
+
+
+X = 'spam'
+def func():
+    X = 'NI'
+    def nested():
+        nonlocal X
+        X = 'spam'
+    nested()
+    print(X)
+
+func()    # NI
