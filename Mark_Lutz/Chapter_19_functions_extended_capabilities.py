@@ -37,4 +37,33 @@ def mymap(func, iterable):     # Написали свою функцию, ан�
 >>> [inc(x) for x in [1, 2, 3, 4]]               # Для генерации элементов взамен используйте ()
 # [11, 12, 13, 14]
 
+# /////////////// filter \\\\\\\\\\\\\\\\\\\
 
+list(filter((lambda  x: x > 0), range(-5, 5)))
+# [1, 2, 3, 4]
+
+# res = []
+# for х in range (-5, 5) : # Операторный эквивалент
+#       if х > 0:
+#       res.append(x)
+# print(res)    >>>>  [1, 2, 3, 4]
+
+[х for х in range(-5, 5) if х > 0]
+# [1, 2, 3, 4]
+
+# ///////////////  reduce \\\\\\\\\\\\\\\\\\\\
+
+from functools import reduce
+>>> reduce((lambda x, y: x + y), [1, 2, 3, 4])  # 10
+>>> reduce((lambda x, y: x * y), [1, 2, 3, 4])  # 24
+
+def myreduce(function, sequence):          # Самописная функция reduce
+    tally = sequence[0]
+    for next in sequence [1:]:
+        tally = function(tally, next)
+    return tally
+
+>>> myreduce ((lambda x, у: x + у) , [1, 2, 3, 4, 5])
+# 15
+>>> myreduce ((lambda x, y: x * y) , [1, 2, 3, 4, 5])
+# 120
